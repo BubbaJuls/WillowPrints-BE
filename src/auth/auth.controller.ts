@@ -1,16 +1,19 @@
-import { Controller, Get } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { Body, Controller, Post } from '@nestjs/common';
+import { AuthService, AuthResponse } from './auth.service';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
 
-/**
- * Placeholder auth endpoints. Add POST /auth/login, /auth/register, etc.
- * when implementing real authentication (e.g. JWT or sessions).
- */
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Get('health')
-  health() {
-    return { status: 'ok', message: 'Auth module is up' };
+  @Post('register')
+  async register(@Body() dto: RegisterDto): Promise<AuthResponse> {
+    return this.authService.register(dto);
+  }
+
+  @Post('login')
+  async login(@Body() dto: LoginDto): Promise<AuthResponse> {
+    return this.authService.login(dto);
   }
 }
