@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
@@ -33,7 +34,7 @@ export class OrdersController {
     return this.ordersService.findMyOrders(payload.sub);
   }
 
-  /** Admin: list all orders */
+  /** Admin: list all orders (must be before Get(':id')) */
   @Get()
   @UseGuards(RolesGuard)
   @Roles(Role.admin)
@@ -41,11 +42,30 @@ export class OrdersController {
     return this.ordersService.findAll();
   }
 
+  /** Admin: list transaction logs (optional ?orderId=) */
+  @Get('order-logs')
+  @UseGuards(RolesGuard)
+  @Roles(Role.admin)
+  findLogs(@Query('orderId') orderId?: string) {
+    return this.ordersService.findLogs(orderId);
+  }
+
+  /** Get single order (own or admin) – for receipt / order detail */
+  @Get(':id')
+  findOne(@Param('id') id: string, @CurrentUser() payload: JwtPayload) {
+    const isAdmin = payload.role === Role.admin;
+    return this.ordersService.findOne(id, payload.sub, isAdmin);
+  }
+
   /** Admin: update order status */
   @Patch(':id/status')
   @UseGuards(RolesGuard)
   @Roles(Role.admin)
-  updateStatus(@Param('id') id: string, @Body() dto: UpdateOrderStatusDto) {
-    return this.ordersService.updateStatus(id, dto);
+  updateStatus(
+    @Param('id') id: string,
+    @Body() dto: UpdateOrderStatusDto,
+    @CurrentUser() payload: JwtPayload,
+  ) {
+    return this.ordersService.updateStatus(id, dto, payload.sub);
   }
 }

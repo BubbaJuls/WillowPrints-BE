@@ -1,14 +1,20 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
-import { OrderStatus, Prisma } from '@prisma/client';
+import { OrderLogAction, OrderStatus, Prisma } from '@prisma/client';
+
+function generateOrderNumber(): string {
+  const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  const rand = Math.random().toString(36).slice(2, 10);
+  return `WP-${date}-${rand}`;
+}
 
 @Injectable()
 export class OrdersService {
   constructor(private readonly prisma: PrismaService) {}
 
-  /** Create order for current user; total computed from product prices */
+  /** Create order for current user; total computed from product prices; writes transaction log */
   async create(userId: string, dto: CreateOrderDto) {
     if (!dto.items?.length) {
       throw new BadRequestException('Order must have at least one item');
@@ -34,8 +40,10 @@ export class OrdersService {
         priceAtOrder,
       });
     }
-    return this.prisma.order.create({
+    const orderNumber = generateOrderNumber();
+    const order = await this.prisma.order.create({
       data: {
+        orderNumber,
         userId,
         total,
         status: OrderStatus.pending,
@@ -43,8 +51,18 @@ export class OrdersService {
       },
       include: {
         items: { include: { product: true } },
+        user: { select: { id: true, email: true, name: true } },
       },
     });
+    await this.prisma.orderLog.create({
+      data: {
+        orderId: order.id,
+        action: OrderLogAction.order_created,
+        toStatus: OrderStatus.pending,
+        performedBy: userId,
+      },
+    });
+    return order;
   }
 
   /** List orders for current user */
@@ -54,6 +72,22 @@ export class OrdersService {
       include: { items: { include: { product: true } } },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  /** Get one order by id (own order or admin); for receipt / order detail */
+  async findOne(id: string, userId: string, isAdmin: boolean) {
+    const order = await this.prisma.order.findUnique({
+      where: { id },
+      include: {
+        items: { include: { product: true } },
+        user: { select: { id: true, email: true, name: true } },
+      },
+    });
+    if (!order) throw new NotFoundException('Order not found');
+    if (!isAdmin && order.userId !== userId) {
+      throw new ForbiddenException('You can only view your own orders');
+    }
+    return order;
   }
 
   /** Admin: list all orders */
@@ -67,14 +101,33 @@ export class OrdersService {
     });
   }
 
-  /** Admin: update order status */
-  async updateStatus(id: string, dto: UpdateOrderStatusDto) {
+  /** Admin: update order status; writes transaction log */
+  async updateStatus(id: string, dto: UpdateOrderStatusDto, performedBy: string) {
     const order = await this.prisma.order.findUnique({ where: { id } });
     if (!order) throw new NotFoundException('Order not found');
-    return this.prisma.order.update({
+    const updated = await this.prisma.order.update({
       where: { id },
       data: { status: dto.status },
       include: { items: { include: { product: true } } },
+    });
+    await this.prisma.orderLog.create({
+      data: {
+        orderId: id,
+        action: OrderLogAction.status_updated,
+        fromStatus: order.status,
+        toStatus: dto.status,
+        performedBy,
+      },
+    });
+    return updated;
+  }
+
+  /** Admin: list transaction logs for an order (or globally) */
+  async findLogs(orderId?: string) {
+    return this.prisma.orderLog.findMany({
+      where: orderId ? { orderId } : undefined,
+      orderBy: { createdAt: 'desc' },
+      take: orderId ? 100 : 500,
     });
   }
 }

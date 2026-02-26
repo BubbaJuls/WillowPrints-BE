@@ -23,6 +23,11 @@ enum OrderStatus {
   cancelled
 }
 
+enum OrderLogAction {
+  order_created
+  status_updated
+}
+
 model User {
   id           String    @id @default(uuid())
   name         String?
@@ -32,31 +37,73 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   orders       Order[]
+  cart         Cart?
 }
 
 model Product {
-  id          String   @id @default(uuid())
+  id          String     @id @default(uuid())
   name        String
   description String
-  price       Decimal  @db.Decimal(10, 2)
-  images      String[] @default([])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  price       Decimal    @db.Decimal(10, 2)
+  images      String[]   @default([])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
   orderItems  OrderItem[]
+  cartItems   CartItem[]
+}
+
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, productId])
+  @@index([cartId])
 }
 
 model Order {
-  id        String      @id @default(uuid())
-  userId    String
-  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items     OrderItem[]
-  total     Decimal     @db.Decimal(10, 2)
-  status    OrderStatus @default(pending)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id          String      @id @default(uuid())
+  orderNumber String      @unique
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       OrderItem[]
+  total       Decimal     @db.Decimal(10, 2)
+  status      OrderStatus @default(pending)
+  logs        OrderLog[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   @@index([userId])
   @@index([status])
+  @@index([orderNumber])
+}
+
+model OrderLog {
+  id          String        @id @default(uuid())
+  orderId     String
+  order       Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  action      OrderLogAction
+  fromStatus  OrderStatus?
+  toStatus    OrderStatus?
+  metadata    Json?
+  performedBy String?
+  createdAt   DateTime      @default(now())
+
+  @@index([orderId])
+  @@index([createdAt])
 }
 
 // Join table: Order <-> Products with quantity and price snapshot
