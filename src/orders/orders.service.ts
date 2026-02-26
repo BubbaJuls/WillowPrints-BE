@@ -3,7 +3,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { OrderStatus, Prisma } from '@prisma/client';
-import { Decimal } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class OrdersService {
@@ -22,12 +21,12 @@ export class OrdersService {
       throw new BadRequestException('One or more products not found');
     }
     const productMap = new Map(products.map((p) => [p.id, p]));
-    let total = new Decimal(0);
+    let total = new Prisma.Decimal(0);
     const orderItems: Prisma.OrderItemCreateWithoutOrderInput[] = [];
     for (const item of dto.items) {
       const product = productMap.get(item.productId)!;
       const priceAtOrder = product.price;
-      const lineTotal = new Decimal(priceAtOrder).mul(item.quantity);
+      const lineTotal = new Prisma.Decimal(priceAtOrder).mul(item.quantity);
       total = total.add(lineTotal);
       orderItems.push({
         productId: product.id,

@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { Decimal } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class ProductsService {
@@ -30,7 +30,7 @@ export class ProductsService {
       data: {
         name: dto.name,
         description: dto.description,
-        price: new Decimal(dto.price),
+        price: new Prisma.Decimal(dto.price),
         images: dto.images ?? [],
       },
     });
@@ -44,7 +44,7 @@ export class ProductsService {
       data: {
         ...(dto.name !== undefined && { name: dto.name }),
         ...(dto.description !== undefined && { description: dto.description }),
-        ...(dto.price !== undefined && { price: new Decimal(dto.price) }),
+        ...(dto.price !== undefined && { price: new Prisma.Decimal(dto.price) }),
         ...(dto.images !== undefined && { images: dto.images }),
       },
     });

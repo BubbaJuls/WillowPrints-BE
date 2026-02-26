@@ -114,7 +114,7 @@ API runs at **http://localhost:4000**. CORS is enabled for **http://localhost:30
 
 1. Push the repo to GitHub.
 2. On [Render](https://render.com): **New → Web Service**, connect the repo, root directory `WP-BE` (or wherever the backend lives).
-3. **Build command:** `npm install && npx prisma generate && npm run build`
+3. **Build command:** `npm install && npm run build` (the `build` script runs `prisma generate` then `nest build`)
 4. **Start command:** `npx prisma migrate deploy && node dist/main.js`
 5. **Environment variables:** Add `DATABASE_URL` (same Supabase URL) and `JWT_SECRET`. Set `PORT` if Render provides one (e.g. `PORT=10000`).
 6. Deploy. Then in WP-FE set `NEXT_PUBLIC_API_URL` to the Render URL (e.g. `https://your-app.onrender.com`). For CORS, you may need to allow that frontend origin in the backend (see below).
