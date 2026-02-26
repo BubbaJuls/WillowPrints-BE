@@ -29,7 +29,7 @@ export class OrdersService {
       const lineTotal = new Prisma.Decimal(priceAtOrder).mul(item.quantity);
       total = total.add(lineTotal);
       orderItems.push({
-        productId: product.id,
+        product: { connect: { id: product.id } },
         quantity: item.quantity,
         priceAtOrder,
       });
