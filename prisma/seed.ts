@@ -1,6 +1,6 @@
 /**
  * Seed script: creates sample products and optional admin user.
- * Run: npm run prisma:seed (after prisma generate and migrate)
+ * Prices in Philippine pesos (PHP). Run: npm run prisma:seed (after prisma generate and migrate)
  */
 
 import { PrismaClient, Role } from '@prisma/client';
@@ -25,63 +25,56 @@ async function main() {
     console.log('Created admin user:', adminEmail);
   }
 
-  // Sample products – aligned with WP-FE placeholder style
+  // Initial products – images in WP-FE public/products/ (paths relative to FE origin). Prices in PHP.
   const products = [
     {
-      name: 'Botanical No. 1',
+      name: 'Willow.Prints Logo Tote Bag',
       description:
-        'A delicate botanical print on archival paper. Perfect for a calm corner or above your desk.',
-      price: 28.0,
-      images: [
-        'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=800&q=80',
-        'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80',
-      ],
+        'Cream canvas tote with the Willow.Prints Arts & Crafts logo. Sturdy, natural fabric with black printed design. Perfect for daily use or gifting.',
+      price: 449,
+      images: ['/products/tote-willowprints.jpg'],
     },
     {
-      name: 'Dawn Landscape',
-      description: 'Soft gradient landscape print. Brings a quiet, morning mood to any room.',
-      price: 32.0,
-      images: [
-        'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=800&q=80',
-        'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=800&q=80',
-      ],
-    },
-    {
-      name: 'Abstract Blush',
+      name: 'Themed Design Tote Bag',
       description:
-        'Minimal abstract print in blush and cream. Fits seamlessly into pastel interiors.',
-      price: 26.0,
-      images: [
-        'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80',
-        'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=800&q=80',
-      ],
+        'Cream canvas tote with a bold graphic design. Statement piece for fans of music and style. Durable construction, roomy interior.',
+      price: 499,
+      images: ['/products/tote-themed.jpg'],
     },
     {
-      name: 'Muted Florals',
-      description: 'Gentle floral composition with muted tones. Printed on sustainable paper.',
-      price: 30.0,
-      images: [
-        'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800&q=80',
-        'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80',
-      ],
+      name: 'Personalized Burlap Tote',
+      description:
+        'Natural burlap tote with white canvas pocket. Custom name printed in elegant script (example: Ethel). White rope handles and button closure.',
+      price: 549,
+      images: ['/products/tote-personalized.jpg'],
     },
     {
-      name: 'Soft Geometry',
-      description: 'Clean geometric shapes in soft pastels. Ideal for modern, minimal spaces.',
-      price: 24.0,
-      images: [
-        'https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?w=800&q=80',
-        'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=800&q=80',
-      ],
+      name: 'Happy Mother\'s Day Glass Mug',
+      description:
+        'Clear glass mug with "Happy Mother\'s Day" in decorative script. Copper/bronze finish. Dishwasher-safe, perfect for a thoughtful gift.',
+      price: 349,
+      images: ['/products/mug-mothers-day.jpg'],
     },
     {
-      name: 'Meadow Study',
-      description: 'Inspired by quiet meadows. A restful addition to bedrooms or reading nooks.',
-      price: 29.0,
-      images: [
-        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80',
-        'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=800&q=80',
-      ],
+      name: 'Personalized Acrylic Keychains',
+      description:
+        'Clear acrylic keychains with custom names and floral designs. Multiple styles: oval or round, various text and background colors. Includes keyring and optional tassel.',
+      price: 199,
+      images: ['/products/keychains-acrylic.jpg'],
+    },
+    {
+      name: 'Personalized Glass Mugs',
+      description:
+        'Clear glass mugs with your name in elegant black script. Ideal for home, office, or as a gift. Simple and timeless.',
+      price: 349,
+      images: ['/products/mugs-personalized.jpg'],
+    },
+    {
+      name: 'Name Tag Keychains',
+      description:
+        'Cream tag keychains with your name in bold neon pink. Gold lobster clasp, colorful ball chain, and heart-shaped carabiner. Fun and customizable.',
+      price: 249,
+      images: ['/products/keychains-name-tags.jpg'],
     },
   ];
 
@@ -98,7 +91,7 @@ async function main() {
       });
     }
   }
-  console.log('Seeded', products.length, 'products');
+  console.log('Seeded', products.length, 'products (prices in PHP)');
 }
 
 main()
