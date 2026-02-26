@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
-const library_1 = require("@prisma/client/runtime/library");
+const client_1 = require("@prisma/client");
 let ProductsService = class ProductsService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -35,7 +35,7 @@ let ProductsService = class ProductsService {
             data: {
                 name: dto.name,
                 description: dto.description,
-                price: new library_1.Decimal(dto.price),
+                price: new client_1.Prisma.Decimal(dto.price),
                 images: dto.images ?? [],
             },
         });
@@ -47,7 +47,7 @@ let ProductsService = class ProductsService {
             data: {
                 ...(dto.name !== undefined && { name: dto.name }),
                 ...(dto.description !== undefined && { description: dto.description }),
-                ...(dto.price !== undefined && { price: new library_1.Decimal(dto.price) }),
+                ...(dto.price !== undefined && { price: new client_1.Prisma.Decimal(dto.price) }),
                 ...(dto.images !== undefined && { images: dto.images }),
             },
         });

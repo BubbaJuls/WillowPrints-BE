@@ -13,7 +13,6 @@ exports.OrdersService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const client_1 = require("@prisma/client");
-const library_1 = require("@prisma/client/runtime/library");
 let OrdersService = class OrdersService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -30,15 +29,15 @@ let OrdersService = class OrdersService {
             throw new common_1.BadRequestException('One or more products not found');
         }
         const productMap = new Map(products.map((p) => [p.id, p]));
-        let total = new library_1.Decimal(0);
+        let total = new client_1.Prisma.Decimal(0);
         const orderItems = [];
         for (const item of dto.items) {
             const product = productMap.get(item.productId);
             const priceAtOrder = product.price;
-            const lineTotal = new library_1.Decimal(priceAtOrder).mul(item.quantity);
+            const lineTotal = new client_1.Prisma.Decimal(priceAtOrder).mul(item.quantity);
             total = total.add(lineTotal);
             orderItems.push({
-                productId: product.id,
+                product: { connect: { id: product.id } },
                 quantity: item.quantity,
                 priceAtOrder,
             });

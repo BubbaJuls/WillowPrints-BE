@@ -9,6 +9,11 @@ export declare class JwtStrategy extends JwtStrategy_base {
         sub: string;
         email: string;
         role: string;
-    }): Promise<any>;
+    }): Promise<{
+        role: import(".prisma/client").$Enums.Role;
+        id: string;
+        email: string;
+        name: string | null;
+    }>;
 }
 export {};

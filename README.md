@@ -41,13 +41,15 @@ Edit `.env`:
 
 ### Install and Prisma
 
-Install deps (scripts are skipped via `.npmrc` to avoid Prisma preinstall issues in some environments). Then generate the client and run migrations:
+Install deps (scripts are skipped via `.npmrc` to avoid Prisma preinstall issues in some environments). **You must run `npx prisma generate` after install** so the client is generated—otherwise you’ll see 30+ TypeScript errors (`PrismaClient`/`Role` not found, `Property 'user' does not exist on type 'PrismaService'`, etc.). Then run migrations:
 
 ```bash
 npm install
 npx prisma generate
 npx prisma migrate dev --name init
 ```
+
+**WSL:** Use Node 20 (e.g. `nvm use 20`), then run `npx prisma generate`. If you see `Cannot find module '...query_engine_bg.postgresql.wasm-base64.js'`, the lockfile may have pulled Prisma 6/7. From `WP-BE` run: `rm -rf node_modules package-lock.json && npm install && npx prisma generate` (project is pinned to Prisma 5.22.0 for the native engine).
 
 ### Seed (optional)
 

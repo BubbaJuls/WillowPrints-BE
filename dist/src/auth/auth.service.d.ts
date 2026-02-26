@@ -24,5 +24,10 @@ export declare class AuthService {
     register(dto: RegisterDto): Promise<AuthResponse>;
     login(dto: LoginDto): Promise<AuthResponse>;
     private buildAuthResponse;
-    validateByUserId(userId: string): Promise<any>;
+    validateByUserId(userId: string): Promise<{
+        id: string;
+        email: string;
+        name: string | null;
+        role: import(".prisma/client").$Enums.Role;
+    } | null>;
 }
