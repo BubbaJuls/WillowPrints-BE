@@ -80,7 +80,16 @@ async function main() {
 
   for (const p of products) {
     const existing = await prisma.product.findFirst({ where: { name: p.name } });
-    if (!existing) {
+    if (existing) {
+      await prisma.product.update({
+        where: { id: existing.id },
+        data: {
+          description: p.description,
+          price: p.price,
+          images: p.images,
+        },
+      });
+    } else {
       await prisma.product.create({
         data: {
           name: p.name,
