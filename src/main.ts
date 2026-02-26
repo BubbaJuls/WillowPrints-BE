@@ -19,9 +19,9 @@ async function bootstrap() {
     }),
   );
 
-  // CORS: allow WP-FE (Next.js) at localhost:3000
+  // CORS: allow WP-FE (Next.js) at localhost:3001
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: 'http://localhost:3001',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });

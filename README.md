@@ -1,6 +1,6 @@
 # WillowPrints Backend (WP-BE)
 
-NestJS API with TypeScript, **Supabase (PostgreSQL)**, and Prisma. JWT auth, roles (user/admin), Products and Orders CRUD. No Docker—ready for local development and free-tier deployment (e.g. Render). Connects to WP-FE (Next.js) at `http://localhost:3000`.
+NestJS API with TypeScript, **Supabase (PostgreSQL)**, and Prisma. JWT auth, roles (user/admin), Products and Orders CRUD. No Docker—ready for local development and free-tier deployment (e.g. Render). Connects to WP-FE (Next.js) at `http://localhost:3001`.
 
 ---
 
@@ -69,7 +69,7 @@ npx prisma db seed
 npm run start:dev
 ```
 
-API runs at **http://localhost:4000**. CORS is enabled for **http://localhost:3000** (WP-FE).
+API runs at **http://localhost:4000**. CORS is enabled for **http://localhost:3001** (WP-FE).
 
 ---
 
