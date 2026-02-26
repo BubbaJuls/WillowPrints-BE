@@ -116,7 +116,7 @@ API runs at **http://localhost:4000**. CORS is enabled for **http://localhost:30
 2. On [Render](https://render.com): **New → Web Service**, connect the repo, root directory `WP-BE` (or wherever the backend lives).
 3. **Build command:** `npm install && npm run build` (the `build` script runs `prisma generate` then `nest build`)
 4. **Start command:** `npx prisma migrate deploy && node dist/main.js`
-5. **Environment variables:** Add `DATABASE_URL` (same Supabase URL) and `JWT_SECRET`. Set `PORT` if Render provides one (e.g. `PORT=10000`).
+5. **Environment variables:** Add **DATABASE_URL** (Supabase **Session** pooler URL, port 6543), **DIRECT_URL** (Supabase **Direct** connection, port 5432), and **JWT_SECRET**. Set **PORT** if Render provides one (e.g. `PORT=10000`). If the app exits with Prisma error **P1012**, check that both `DATABASE_URL` and `DIRECT_URL` are set and start with `postgresql://`; URL-encode any special characters in the password.
 6. Deploy. Then in WP-FE set `NEXT_PUBLIC_API_URL` to the Render URL (e.g. `https://your-app.onrender.com`). For CORS, you may need to allow that frontend origin in the backend (see below).
 
 **CORS for production:** If your frontend is on another domain (e.g. Vercel), update `src/main.ts` to allow that origin, or set `origin: true` / a list of allowed origins.
